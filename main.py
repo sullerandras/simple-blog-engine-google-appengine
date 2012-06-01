@@ -16,9 +16,12 @@
 #
 import webapp2
 
-class MainHandler(webapp2.RequestHandler):
+class IndexHandler(webapp2.RequestHandler):
     def get(self):
-        self.response.out.write('Hello world!')
+        self.response.out.write(self.render())
 
-app = webapp2.WSGIApplication([('/', MainHandler)],
+    def render(self):
+        return 'No entries yet, please check back later!'
+
+app = webapp2.WSGIApplication([('/', IndexHandler)],
                               debug=True)
