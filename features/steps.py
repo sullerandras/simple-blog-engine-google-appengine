@@ -37,5 +37,21 @@ def given_i_am_a_guest_user(step):
 
 @step(u'Then I should see a "([^"]*)" link')
 def then_i_should_see_a_link(step, name):
-    world.browser.find_element_by_xpath("//a[contains(text(), '%s')]" % name)
+    world.browser.find_element_by_link_text(name)
 
+
+@step(u'Given I am a signed in user')
+def given_i_am_a_signed_in_user(step):
+    world.browser.get("http://localhost:8080") # Load page
+    world.browser.find_element_by_link_text('Sign in').click()
+    time.sleep(0.5) # Let the page load, will be added to the API
+    world.browser.find_element_by_id('submit-login').click()
+    time.sleep(0.5) # Let the page load, will be added to the API
+
+@step(u'Then I should not see the "([^"]*)" link')
+def then_i_should_not_see_the_link(step, name):
+    try:
+        world.browser.find_element_by_link_text(name)
+        assert 0, "I should not see the link: %s" % name
+    except NoSuchElementException:
+        pass
