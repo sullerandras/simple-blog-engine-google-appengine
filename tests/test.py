@@ -43,5 +43,15 @@ class SignInTestCase(unittest.TestCase):
         s = handler.render()
         self.assertRegexpMatches(s, r"<a href=[^>]+>Sign in</a>")
 
+    def testSignedIn(self):
+        self.testbed.setup_env(
+            USER_EMAIL = 'admin@example.com',
+            USER_ID = '123',
+            USER_IS_ADMIN = '0',
+            overwrite = True)
+        handler = IndexHandler()
+        s = handler.render()
+        self.assertNotRegexpMatches(s, r"<a href=[^>]+>Sign in</a>")
+
 if __name__ == '__main__':
     unittest.main()

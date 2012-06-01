@@ -1,7 +1,9 @@
 <html>
 <body>
 	<div class="header">
+		{% if not user %}
 		<a href="{{ login_url }}">Sign in</a>
+		{% endif %}
 	</div>
 	<div class="content">
 		No entries yet, please check back later!
