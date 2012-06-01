@@ -28,7 +28,7 @@ def when_i_visit_the_home_page(step):
 @step(u'Then I should see the message "([^"]*)"')
 def then_i_should_see_the_message(step, msg):
     body = world.browser.find_element_by_xpath("//body")
-    assert body.text == msg, "I should see '%s', but I see '%s'" % (msg, body.text)
+    assert msg in body.text, "I should see '%s', but I see '%s'" % (msg, body.text)
 
 
 @step(u'Given I am a guest user')
