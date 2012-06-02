@@ -6,6 +6,9 @@
 		{% else %}
 		<a href="{{ login_url }}">Sign in</a>
 		{% endif %}
+		{% if is_admin %}
+		<a href="{{ new_blog_entry_url }}">New blog entry</a>
+		{% endif %}
 	</div>
 	<div class="content">
 		No entries yet, please check back later!

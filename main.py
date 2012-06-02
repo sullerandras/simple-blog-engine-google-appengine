@@ -27,6 +27,7 @@ class BaseRequestHandler(webapp.RequestHandler):
     values = {
         'request': req,
         'user': users.get_current_user(),
+        'is_admin': users.is_current_user_admin(),
         'login_url': users.create_login_url(req.uri),
         'logout_url': users.create_logout_url('http://%s/' % (req.host,))
         }

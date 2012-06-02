@@ -34,7 +34,7 @@ class SignInTestCase(BaseTestCase):
 
     def testSignedIn(self):
         self.testbed.setup_env(
-            USER_EMAIL = 'admin@example.com',
+            USER_EMAIL = 'user@example.com',
             USER_ID = '123',
             USER_IS_ADMIN = '0',
             overwrite = True)
@@ -50,13 +50,39 @@ class SignOutTestCase(BaseTestCase):
 
     def testSignedIn(self):
         self.testbed.setup_env(
-            USER_EMAIL = 'admin@example.com',
+            USER_EMAIL = 'user@example.com',
             USER_ID = '123',
             USER_IS_ADMIN = '0',
             overwrite = True)
         handler = IndexHandler()
         s = handler.render()
         self.assertRegexpMatches(s, r"<a href=[^>]+>Sign out</a>")
+
+class NewBlogEntryLinkTestCase(BaseTestCase):
+    def testAdmin(self):
+        self.testbed.setup_env(
+            USER_EMAIL = 'admin@example.com',
+            USER_ID = '123',
+            USER_IS_ADMIN = '1',
+            overwrite = True)
+        handler = IndexHandler()
+        s = handler.render()
+        self.assertRegexpMatches(s, r"<a href=[^>]+>New blog entry</a>")
+
+    def testSignedIn(self):
+        self.testbed.setup_env(
+            USER_EMAIL = 'user@example.com',
+            USER_ID = '123',
+            USER_IS_ADMIN = '0',
+            overwrite = True)
+        handler = IndexHandler()
+        s = handler.render()
+        self.assertNotRegexpMatches(s, r"<a href=[^>]+>New blog entry</a>")
+
+    def testGuest(self):
+        handler = IndexHandler()
+        s = handler.render()
+        self.assertNotRegexpMatches(s, r"<a href=[^>]+>New blog entry</a>")
 
 if __name__ == '__main__':
     unittest.main()
