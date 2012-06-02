@@ -2,4 +2,5 @@ from google.appengine.ext import db
 
 class BlogEntry(db.Model):
   """Represents a blog entry."""
-  pass
+  title = db.StringProperty(required = True)
+  text = db.StringProperty(required = True)

@@ -98,5 +98,46 @@ class NewBlogEntryPageTestCase(BaseTestCase):
         self.assertRegexpMatches(s, r'<[^>]+ name="text"[^>]*>')
         self.assertRegexpMatches(s, r'<button type="submit"[^>]*>Post</button>')
 
+class PostNewBlogEntryTestCase(BaseTestCase):
+    def testPostNewBlogEntry(self):
+        class MockRequest(object):
+            def __init__(self):
+                self.uri = 'http://mockhost'
+                self.POST = {'title': 'asdsad', 'text': 'my text'}
+
+        class MockResponse(object):
+            def __init__(self):
+                self.status = 0
+                self.headers = {}
+            def set_status(self, status):
+                self.status = status
+            def clear(self):
+                pass
+
+        self.testbed.setup_env(
+            USER_EMAIL = 'admin@example.com',
+            USER_ID = '123',
+            USER_IS_ADMIN = '1',
+            overwrite = True)
+
+        self.assertEqual(0, BlogEntry.all().count())
+        handler = NewBlogEntryHandler()
+        handler.request = MockRequest()
+        handler.response = MockResponse()
+        handler.post()
+        self.assertEqual(1, BlogEntry.all().count())
+        e = BlogEntry.all().get()
+        self.assertEqual('asdsad', e.title)
+        self.assertEqual('my text', e.text)
+
+    def testRenderingBlogEntries(self):
+        self.assertEqual(0, BlogEntry.all().count())
+        BlogEntry(title = 'asdsad', text = 'my text').save()
+        self.assertEqual(1, BlogEntry.all().count())
+        handler = IndexHandler()
+        s = handler.render()
+        self.assertRegexpMatches(s, r'<[^>]+ class="title"[^>]*>asdsad</')
+        self.assertRegexpMatches(s, r'<[^>]+ class="text"[^>]*>my text</')
+
 if __name__ == '__main__':
     unittest.main()

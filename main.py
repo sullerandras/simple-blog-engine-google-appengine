@@ -8,6 +8,8 @@ from google.appengine.api import users
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 
+import models
+
 _DEBUG = True
 
 class MockRequest(object):
@@ -41,10 +43,17 @@ class BaseRequestHandler(webapp.RequestHandler):
 
 class IndexHandler(BaseRequestHandler):
     def render(self):
-        return self.renderTemplate('index.html', {'new_blog_entry_url': '/new'})
+        entries = models.BlogEntry.all()
+        return self.renderTemplate('index.html', {
+            'new_blog_entry_url': '/new',
+            'entries': entries
+            })
 
 class NewBlogEntryHandler(BaseRequestHandler):
     def post(self):
+        title = self.request.POST.get('title')
+        text = self.request.POST.get('text')
+        models.BlogEntry(title = title, text = text).save()
         self.redirect('/')
 
     def render(self):
