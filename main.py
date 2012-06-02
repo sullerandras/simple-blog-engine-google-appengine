@@ -43,5 +43,12 @@ class IndexHandler(BaseRequestHandler):
     def render(self):
         return self.renderTemplate('index.html')
 
-app = webapp.WSGIApplication([('/', IndexHandler)],
+class NewBlogEntryHandler(BaseRequestHandler):
+    def get(self):
+        self.response.out.write(self.render())
+
+    def render(self):
+        return self.renderTemplate('new-blog-entry.html')
+
+app = webapp.WSGIApplication([('/', IndexHandler), ('/new', NewBlogEntryHandler)],
                               debug=True)
