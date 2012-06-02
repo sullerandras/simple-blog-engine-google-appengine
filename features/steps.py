@@ -59,3 +59,13 @@ def then_i_should_not_see_the_link(step, name):
         assert 0, "I should not see the link: %s" % name
     except NoSuchElementException:
         pass
+
+
+@step(u'Given I am signed in as admin')
+def given_i_am_signed_in_as_admin(step):
+    world.browser.get("http://localhost:8080") # Load page
+    world.browser.find_element_by_link_text('Sign in').click()
+    time.sleep(0.2) # Let the page load, will be added to the API
+    world.browser.find_element_by_id('admin').click()
+    world.browser.find_element_by_id('submit-login').click()
+    time.sleep(0.2) # Let the page load, will be added to the API
