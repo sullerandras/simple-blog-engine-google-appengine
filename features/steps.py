@@ -3,6 +3,9 @@ from lettuce import step, world, before, after
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
+import random
+
+BASE_URL = 'http://localhost:8080'
 
 # ======================== HOOKS ==========================
 
@@ -21,7 +24,13 @@ def before_each_scenario(scenario):
 # =========================================================
 
 def load_page(page):
-    world.browser.get("http://localhost:8080%s" % page)
+    world.browser.get("%s%s" % (BASE_URL, page))
+
+def get_random_text(length):
+    s = ''
+    for i in xrange(length):
+        s += chr(random.randrange(ord(' '), ord('Z')))
+    return s
 
 # =========================================================
 
@@ -88,3 +97,33 @@ def i_should_see_an_input_for(step, name):
 @step(u'And I should see a "([^"]*)" button')
 def and_i_should_see_a_button(step, name):
     world.browser.find_element_by_xpath("//button[contains(text(), '%s')]" % name)
+
+
+@step(u'And I am on the "New blog entry" page')
+def and_i_am_on_the_page(step):
+    load_page('/new')
+
+@step(u'When I fill out the details with random data')
+def when_i_fill_out_the_details_with_random_data(step):
+    title = world.browser.find_element_by_name('title')
+    world.title = get_random_text(20)
+    title.send_keys(world.title)
+    text = world.browser.find_element_by_name('text')
+    world.text = get_random_text(200)
+    text.send_keys(world.text)
+
+@step(u'And I click on the "([^"]*)" button')
+def and_i_click_on_the_button(step, name):
+    world.browser.find_element_by_xpath("//button[contains(text(), '%s')]" % name).click()
+
+@step(u'Then I should see the home page')
+def then_i_should_see_the_home_page(step):
+    url = '%s/' % BASE_URL
+    assert world.browser.current_url == url,\
+        'The url should be %s, but it is %s' % (url, world.browser.current_url)
+
+@step(u'And I should see the new blog entry with the entered random data')
+def and_i_should_see_the_new_blog_entry_with_the_entered_random_data(step):
+    body = world.browser.find_element_by_tag_name('body')
+    assert world.title in body.text
+    assert world.text in body.text
