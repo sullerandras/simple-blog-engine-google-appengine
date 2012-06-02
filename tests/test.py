@@ -6,7 +6,7 @@ from google.appengine.ext import testbed
 from models import BlogEntry
 from main import IndexHandler
 
-class GuestVisitHomePageTestCase(unittest.TestCase):
+class BaseTestCase(unittest.TestCase):
     def setUp(self):
         # First, create an instance of the Testbed class.
         self.testbed = testbed.Testbed()
@@ -19,25 +19,14 @@ class GuestVisitHomePageTestCase(unittest.TestCase):
     def tearDown(self):
         self.testbed.deactivate()
 
+class GuestVisitHomePageTestCase(BaseTestCase):
     def testWithNoBlogEntries(self):
         self.assertEqual(0, BlogEntry.all().count())
         handler = IndexHandler()
         s = handler.render()
         self.assertRegexpMatches(s, "No entries yet, please check back later!")
 
-class SignInTestCase(unittest.TestCase):
-    def setUp(self):
-        # First, create an instance of the Testbed class.
-        self.testbed = testbed.Testbed()
-        # Then activate the testbed, which prepares the service stubs for use.
-        self.testbed.activate()
-        # Next, declare which service stubs you want to use.
-        self.testbed.init_datastore_v3_stub()
-        self.testbed.init_user_stub()
-
-    def tearDown(self):
-        self.testbed.deactivate()
-
+class SignInTestCase(BaseTestCase):
     def testGuest(self):
         handler = IndexHandler()
         s = handler.render()
@@ -53,19 +42,7 @@ class SignInTestCase(unittest.TestCase):
         s = handler.render()
         self.assertNotRegexpMatches(s, r"<a href=[^>]+>Sign in</a>")
 
-class SignOutTestCase(unittest.TestCase):
-    def setUp(self):
-        # First, create an instance of the Testbed class.
-        self.testbed = testbed.Testbed()
-        # Then activate the testbed, which prepares the service stubs for use.
-        self.testbed.activate()
-        # Next, declare which service stubs you want to use.
-        self.testbed.init_datastore_v3_stub()
-        self.testbed.init_user_stub()
-
-    def tearDown(self):
-        self.testbed.deactivate()
-
+class SignOutTestCase(BaseTestCase):
     def testGuest(self):
         handler = IndexHandler()
         s = handler.render()
