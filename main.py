@@ -55,5 +55,16 @@ class NewBlogEntryHandler(BaseRequestHandler):
     def render(self):
         return self.renderTemplate('new-blog-entry.html')
 
-app = webapp.WSGIApplication([('/', IndexHandler), ('/new', NewBlogEntryHandler)],
-                              debug=True)
+class XsrfTokenHandler(BaseRequestHandler):
+    def render(self):
+        if not self.request.host.startswith('localhost:'):
+            return 'access from %s' % self.request.host
+        from google.appengine.ext import admin
+        return admin.get_xsrf_token()
+
+app = webapp.WSGIApplication([
+        ('/', IndexHandler),
+        ('/new', NewBlogEntryHandler),
+        ('/xsrf_token', XsrfTokenHandler),
+        ],
+        debug=True)

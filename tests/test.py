@@ -2,9 +2,10 @@ import unittest
 from google.appengine.api import memcache
 from google.appengine.ext import db
 from google.appengine.ext import testbed
+from google.appengine.ext import admin
 
 from models import BlogEntry
-from main import IndexHandler, NewBlogEntryHandler
+from main import IndexHandler, NewBlogEntryHandler, XsrfTokenHandler
 
 class BaseTestCase(unittest.TestCase):
     def setUp(self):
@@ -138,6 +139,17 @@ class PostNewBlogEntryTestCase(BaseTestCase):
         s = handler.render()
         self.assertRegexpMatches(s, r'<[^>]+ class="title"[^>]*>asdsad</')
         self.assertRegexpMatches(s, r'<[^>]+ class="text"[^>]*>my text</')
+
+class XsrfTokenTestCase(BaseTestCase):
+    def testXsrfToken(self):
+        class MockRequest(object):
+            def __init__(self):
+                self.host = 'localhost:8080'
+
+        handler = XsrfTokenHandler()
+        handler.request = MockRequest()
+        s = handler.render()
+        self.assertEqual(s, admin.get_xsrf_token())
 
 if __name__ == '__main__':
     unittest.main()
