@@ -76,9 +76,15 @@ def given_i_am_signed_in_as_admin(step):
     time.sleep(0.2) # Let the page load, will be added to the API
 
 
-@step(u'When I visit the the new blog entry page')
-def when_i_visit_the_the_new_blog_entry_page(step):
-    load_page('/new')
+@step(u'And I click on the "([^"]*)" link')
+def and_i_click_on_the_link(step, link):
+    world.browser.find_element_by_link_text(link).click()
+
+@step(u'Then I should see the "New blog entry" page')
+def then_i_should_see_the_page(step):
+    assert world.browser.current_url.endswith('/new'),\
+        'The url should ends with "/new", but it is %s' % world.browser.current_url
+    world.browser.find_element_by_xpath("//*[text() = 'New blog entry']")
 
 @step(u'I should see an input for "([^"]*)"')
 def i_should_see_an_input_for(step, name):
