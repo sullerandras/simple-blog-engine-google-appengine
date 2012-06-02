@@ -53,5 +53,33 @@ class SignInTestCase(unittest.TestCase):
         s = handler.render()
         self.assertNotRegexpMatches(s, r"<a href=[^>]+>Sign in</a>")
 
+class SignOutTestCase(unittest.TestCase):
+    def setUp(self):
+        # First, create an instance of the Testbed class.
+        self.testbed = testbed.Testbed()
+        # Then activate the testbed, which prepares the service stubs for use.
+        self.testbed.activate()
+        # Next, declare which service stubs you want to use.
+        self.testbed.init_datastore_v3_stub()
+        self.testbed.init_user_stub()
+
+    def tearDown(self):
+        self.testbed.deactivate()
+
+    def testGuest(self):
+        handler = IndexHandler()
+        s = handler.render()
+        self.assertNotRegexpMatches(s, r"<a href=[^>]+>Sign out</a>")
+
+    def testSignedIn(self):
+        self.testbed.setup_env(
+            USER_EMAIL = 'admin@example.com',
+            USER_ID = '123',
+            USER_IS_ADMIN = '0',
+            overwrite = True)
+        handler = IndexHandler()
+        s = handler.render()
+        self.assertRegexpMatches(s, r"<a href=[^>]+>Sign out</a>")
+
 if __name__ == '__main__':
     unittest.main()
