@@ -41,7 +41,7 @@ class BaseRequestHandler(webapp.RequestHandler):
 
 class IndexHandler(BaseRequestHandler):
     def render(self):
-        return self.renderTemplate('index.html')
+        return self.renderTemplate('index.html', {'new_blog_entry_url': '/new'})
 
 class NewBlogEntryHandler(BaseRequestHandler):
     def render(self):
