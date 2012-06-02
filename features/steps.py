@@ -69,3 +69,16 @@ def given_i_am_signed_in_as_admin(step):
     world.browser.find_element_by_id('admin').click()
     world.browser.find_element_by_id('submit-login').click()
     time.sleep(0.2) # Let the page load, will be added to the API
+
+
+@step(u'When I visit the the new blog entry page')
+def when_i_visit_the_the_new_blog_entry_page(step):
+    world.browser.get("http://localhost:8080/new") # Load page
+
+@step(u'I should see an input for "([^"]*)"')
+def i_should_see_an_input_for(step, name):
+    world.browser.find_element_by_name(name)
+
+@step(u'And I should see a "([^"]*)" button')
+def and_i_should_see_a_button(step, name):
+    world.browser.find_element_by_xpath("//button[contains(text(), '%s')]" % name)
