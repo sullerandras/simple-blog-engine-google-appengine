@@ -3,7 +3,6 @@ from lettuce import step, world, before, after
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
-import time, datetime
 
 # ======================== HOOKS ==========================
 
@@ -53,9 +52,7 @@ def then_i_should_see_a_link(step, name):
 def given_i_am_a_signed_in_user(step):
     load_page('/')
     world.browser.find_element_by_link_text('Sign in').click()
-    time.sleep(0.2) # Let the page load, will be added to the API
     world.browser.find_element_by_id('submit-login').click()
-    time.sleep(0.2) # Let the page load, will be added to the API
 
 @step(u'Then I should not see the "([^"]*)" link')
 def then_i_should_not_see_the_link(step, name):
@@ -70,10 +67,8 @@ def then_i_should_not_see_the_link(step, name):
 def given_i_am_signed_in_as_admin(step):
     load_page('/')
     world.browser.find_element_by_link_text('Sign in').click()
-    time.sleep(0.2) # Let the page load, will be added to the API
     world.browser.find_element_by_id('admin').click()
     world.browser.find_element_by_id('submit-login').click()
-    time.sleep(0.2) # Let the page load, will be added to the API
 
 
 @step(u'And I click on the "([^"]*)" link')
