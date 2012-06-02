@@ -44,6 +44,9 @@ class IndexHandler(BaseRequestHandler):
         return self.renderTemplate('index.html', {'new_blog_entry_url': '/new'})
 
 class NewBlogEntryHandler(BaseRequestHandler):
+    def post(self):
+        self.redirect('/')
+
     def render(self):
         return self.renderTemplate('new-blog-entry.html')
 
