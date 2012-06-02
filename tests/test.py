@@ -4,7 +4,7 @@ from google.appengine.ext import db
 from google.appengine.ext import testbed
 
 from models import BlogEntry
-from main import IndexHandler
+from main import IndexHandler, NewBlogEntryHandler
 
 class BaseTestCase(unittest.TestCase):
     def setUp(self):
@@ -83,6 +83,19 @@ class NewBlogEntryLinkTestCase(BaseTestCase):
         handler = IndexHandler()
         s = handler.render()
         self.assertNotRegexpMatches(s, r"<a href=[^>]+>New blog entry</a>")
+
+class NewBlogEntryPageTestCase(BaseTestCase):
+    def testAdmin(self):
+        self.testbed.setup_env(
+            USER_EMAIL = 'admin@example.com',
+            USER_ID = '123',
+            USER_IS_ADMIN = '1',
+            overwrite = True)
+        handler = NewBlogEntryHandler()
+        s = handler.render()
+        self.assertRegexpMatches(s, r'<[^>]+ name="title"[^>]*>')
+        self.assertRegexpMatches(s, r'<[^>]+ name="text"[^>]*>')
+        self.assertRegexpMatches(s, r'<button type="submit"[^>]*>Post</button>')
 
 if __name__ == '__main__':
     unittest.main()
