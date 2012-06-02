@@ -39,7 +39,8 @@ def get_random_text(length):
 
 @step(u'Given there are no blog entries in the database')
 def given_there_are_no_blog_entries_in_the_database(step):
-    pass
+    # hackish. we navigate to a custom URL
+    load_page('/reset-database')
 
 @step(u'When I visit the home page')
 def when_i_visit_the_home_page(step):
@@ -75,7 +76,7 @@ def then_i_should_not_see_the_link(step, name):
         pass
 
 
-@step(u'Given I am signed in as admin')
+@step(u'I am signed in as admin')
 def given_i_am_signed_in_as_admin(step):
     load_page('/')
     world.browser.find_element_by_link_text('Sign in').click()

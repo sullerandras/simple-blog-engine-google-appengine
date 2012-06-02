@@ -1,7 +1,8 @@
 Feature: post new blog entry
 
     Scenario: post new blog entry
-        Given I am signed in as admin
+        Given there are no blog entries in the database
+        And I am signed in as admin
         And I am on the "New blog entry" page
         When I fill out the details with random data
         And I click on the "Post" button
