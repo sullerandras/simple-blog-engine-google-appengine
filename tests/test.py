@@ -93,6 +93,7 @@ class NewBlogEntryPageTestCase(BaseTestCase):
             overwrite = True)
         handler = NewBlogEntryHandler()
         s = handler.render()
+        self.assertRegexpMatches(s, r'<[^>]+>New blog entry</[^>]+>')
         self.assertRegexpMatches(s, r'<[^>]+ name="title"[^>]*>')
         self.assertRegexpMatches(s, r'<[^>]+ name="text"[^>]*>')
         self.assertRegexpMatches(s, r'<button type="submit"[^>]*>Post</button>')
