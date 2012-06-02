@@ -39,8 +39,16 @@ def get_random_text(length):
 
 @step(u'Given there are no blog entries in the database')
 def given_there_are_no_blog_entries_in_the_database(step):
-    # hackish. we navigate to a custom URL
-    load_page('/reset-database')
+    # hackish. we need to get the xsrf_token from a custom url
+    load_page('/xsrf_token')
+    body = world.browser.find_element_by_tag_name('body')
+
+    import urllib
+    import urllib2
+    urllib2.urlopen('http://localhost:8080/_ah/admin/interactive/execute',
+        data = urllib.urlencode({'code' : 'from google.appengine.ext import db\n' +
+                                      'db.delete(db.Query())',
+                                 'xsrf_token': body.text}))
 
 @step(u'When I visit the home page')
 def when_i_visit_the_home_page(step):
