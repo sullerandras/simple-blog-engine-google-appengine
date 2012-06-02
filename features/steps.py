@@ -21,13 +21,18 @@ def before_each_scenario(scenario):
 
 # =========================================================
 
+def load_page(page):
+    world.browser.get("http://localhost:8080%s" % page)
+
+# =========================================================
+
 @step(u'Given there are no blog entries in the database')
 def given_there_are_no_blog_entries_in_the_database(step):
     pass
 
 @step(u'When I visit the home page')
 def when_i_visit_the_home_page(step):
-    world.browser.get("http://localhost:8080") # Load page
+    load_page('/')
 
 @step(u'Then I should see the message "([^"]*)"')
 def then_i_should_see_the_message(step, msg):
@@ -46,7 +51,7 @@ def then_i_should_see_a_link(step, name):
 
 @step(u'Given I am a signed in user')
 def given_i_am_a_signed_in_user(step):
-    world.browser.get("http://localhost:8080") # Load page
+    load_page('/')
     world.browser.find_element_by_link_text('Sign in').click()
     time.sleep(0.2) # Let the page load, will be added to the API
     world.browser.find_element_by_id('submit-login').click()
@@ -63,7 +68,7 @@ def then_i_should_not_see_the_link(step, name):
 
 @step(u'Given I am signed in as admin')
 def given_i_am_signed_in_as_admin(step):
-    world.browser.get("http://localhost:8080") # Load page
+    load_page('/')
     world.browser.find_element_by_link_text('Sign in').click()
     time.sleep(0.2) # Let the page load, will be added to the API
     world.browser.find_element_by_id('admin').click()
@@ -73,7 +78,7 @@ def given_i_am_signed_in_as_admin(step):
 
 @step(u'When I visit the the new blog entry page')
 def when_i_visit_the_the_new_blog_entry_page(step):
-    world.browser.get("http://localhost:8080/new") # Load page
+    load_page('/new')
 
 @step(u'I should see an input for "([^"]*)"')
 def i_should_see_an_input_for(step, name):
