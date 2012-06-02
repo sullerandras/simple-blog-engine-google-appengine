@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import os
 import optparse
 import sys
 # Install the Python unittest2 package before you run this script.
@@ -15,6 +16,9 @@ def main(sdk_path, test_path):
     sys.path.insert(0, sdk_path)
     import dev_appserver
     dev_appserver.fix_sys_path()
+    from google.appengine.dist import use_library
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+    use_library('django', '1.2')
     suite = unittest2.loader.TestLoader().discover(test_path)
     unittest2.TextTestRunner(verbosity=2).run(suite)
 

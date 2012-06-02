@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 import os
-from google.appengine.dist import use_library
-
-os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
-use_library('django', '1.2')
 from google.appengine.api import users
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
