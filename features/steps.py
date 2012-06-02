@@ -7,13 +7,17 @@ import time, datetime
 
 # ======================== HOOKS ==========================
 
-@before.each_feature
-def before_each_feature(feature):
+@before.all
+def before_all():
     world.browser = webdriver.Firefox() # Get local session of firefox
 
-@after.each_feature
-def after_each_feature(feature):
+@after.all
+def after_all(total):
     world.browser.close()
+
+@before.each_scenario
+def before_each_scenario(scenario):
+    world.browser.delete_all_cookies()
 
 # =========================================================
 
@@ -44,9 +48,9 @@ def then_i_should_see_a_link(step, name):
 def given_i_am_a_signed_in_user(step):
     world.browser.get("http://localhost:8080") # Load page
     world.browser.find_element_by_link_text('Sign in').click()
-    time.sleep(0.5) # Let the page load, will be added to the API
+    time.sleep(0.2) # Let the page load, will be added to the API
     world.browser.find_element_by_id('submit-login').click()
-    time.sleep(0.5) # Let the page load, will be added to the API
+    time.sleep(0.2) # Let the page load, will be added to the API
 
 @step(u'Then I should not see the "([^"]*)" link')
 def then_i_should_not_see_the_link(step, name):
