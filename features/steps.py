@@ -29,8 +29,11 @@ def load_page(page):
 def get_random_text(length):
     s = ''
     for i in xrange(length):
-        s += chr(random.randrange(ord(' '), ord('Z')))
-    return s
+        if random.random() < 0.2 and not s.endswith(' '):
+            s += ' '
+        else:
+            s += chr(random.randrange(ord('a'), ord('z')))
+    return s.strip()
 
 # =========================================================
 
@@ -125,5 +128,5 @@ def then_i_should_see_the_home_page(step):
 @step(u'And I should see the new blog entry with the entered random data')
 def and_i_should_see_the_new_blog_entry_with_the_entered_random_data(step):
     body = world.browser.find_element_by_tag_name('body')
-    assert world.title in body.text
-    assert world.text in body.text
+    assert world.title in body.text, 'I should see "%s" but only see "%s"' % (world.title, body.text)
+    assert world.text in body.text, 'I should see "%s" but only see "%s"' % (world.text, body.text)
