@@ -26,11 +26,13 @@ def before_each_scenario(scenario):
 def load_page(page):
     world.browser.get("%s%s" % (BASE_URL, page))
 
-def get_random_text(length):
+def get_random_text(length, multiline):
     s = ''
     for i in xrange(length):
-        if random.random() < 0.2 and not s.endswith(' '):
+        if random.random() < 0.2 and s and s == s.strip():
             s += ' '
+        elif multiline and random.random() < 0.05 and s and s == s.strip():
+            s += '\n'
         else:
             s += chr(random.randrange(ord('a'), ord('z')))
     return s.strip()
@@ -118,10 +120,10 @@ def and_i_am_on_the_page(step):
 @step(u'When I fill out the details with random data')
 def when_i_fill_out_the_details_with_random_data(step):
     title = world.browser.find_element_by_name('title')
-    world.title = get_random_text(20)
+    world.title = get_random_text(20, False)
     title.send_keys(world.title)
     text = world.browser.find_element_by_name('text')
-    world.text = get_random_text(200)
+    world.text = get_random_text(200, True)
     text.send_keys(world.text)
 
 @step(u'And I click on the "([^"]*)" button')
@@ -138,4 +140,5 @@ def then_i_should_see_the_home_page(step):
 def and_i_should_see_the_new_blog_entry_with_the_entered_random_data(step):
     body = world.browser.find_element_by_tag_name('body')
     assert world.title in body.text, 'I should see "%s" but only see "%s"' % (world.title, body.text)
-    assert world.text in body.text, 'I should see "%s" but only see "%s"' % (world.text, body.text)
+    assert world.text in world.browser.page_source,\
+        'I should see "%s" but only see "%s"' % (world.text, world.browser.page_source)
