@@ -104,7 +104,7 @@ class PostNewBlogEntryTestCase(BaseTestCase):
         class MockRequest(object):
             def __init__(self):
                 self.uri = 'http://mockhost'
-                self.POST = {'title': 'asdsad', 'text': 'my text'}
+                self.POST = {'title': 'asdsad', 'text': 'my\ntext'}
 
         class MockResponse(object):
             def __init__(self):
@@ -129,7 +129,7 @@ class PostNewBlogEntryTestCase(BaseTestCase):
         self.assertEqual(1, BlogEntry.all().count())
         e = BlogEntry.all().get()
         self.assertEqual('asdsad', e.title)
-        self.assertEqual('my text', e.text)
+        self.assertEqual('my\ntext', e.text)
 
     def testRenderingBlogEntries(self):
         self.assertEqual(0, BlogEntry.all().count())
