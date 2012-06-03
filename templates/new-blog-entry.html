@@ -1,6 +1,20 @@
+<html>
+<head>
+  <style>
+    input[name='title'] {width: 300px}
+    textarea[name='text'] {
+      display: block;
+      width: 300px;
+      height: 100px;
+    }
+  </style>
+</head>
+<body>
 <h1>New blog entry</h1>
 <form method="POST" action="/new">
 	<input name="title">
 	<textarea name="text"></textarea>
 	<button type="submit">Post</button>
 </form>
+</body>
+</html>

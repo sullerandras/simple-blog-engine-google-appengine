@@ -1,4 +1,17 @@
 <html>
+<head>
+<style type="text/css">
+	.header { text-align: right; position: fixed; right: 1em; }
+	.header * { opacity: 0.2; -webkit-transition: opacity 0.5s; }
+	.header *:hover { opacity: 1; }
+	.title {
+		font-size: 1.5em; font-family: arial; font-weight: bold;
+		padding-top: 0.5em; margin-bottom: 0.3em; border-top: 1px solid black;
+	}
+	.title:first-child { border-top: 0 solid; }
+	.text { margin-bottom: 1em; }
+</style>
+</head>
 <body>
 	<div class="header">
 		{% if user %}
