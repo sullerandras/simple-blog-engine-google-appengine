@@ -1,4 +1,4 @@
-import unittest
+import unittest, datetime
 from google.appengine.api import memcache
 from google.appengine.ext import db
 from google.appengine.ext import testbed
@@ -137,8 +137,10 @@ class PostNewBlogEntryTestCase(BaseTestCase):
         self.assertEqual(1, BlogEntry.all().count())
         handler = IndexHandler()
         s = handler.render()
+        today = datetime.datetime.now().strftime('%Y-%m-%d')
         self.assertRegexpMatches(s, r'<[^>]+ class="title"[^>]*>asdsad</')
         self.assertRegexpMatches(s, r'<[^>]+ class="text"[^>]*>my text</')
+        self.assertRegexpMatches(s, r'<[^>]+ class="date"[^>]*>%s</' % today)
 
 class XsrfTokenTestCase(BaseTestCase):
     def testXsrfToken(self):

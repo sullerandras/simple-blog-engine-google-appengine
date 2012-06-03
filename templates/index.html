@@ -4,12 +4,11 @@
 	.header { text-align: right; position: fixed; right: 1em; }
 	.header * { opacity: 0.2; -webkit-transition: opacity 0.5s; }
 	.header *:hover { opacity: 1; }
-	.title {
-		font-size: 1.5em; font-family: arial; font-weight: bold;
-		padding-top: 0.5em; margin-bottom: 0.3em; border-top: 1px solid black;
-	}
-	.title:first-child { border-top: 0 solid; }
-	.text { margin-bottom: 1em; }
+	.title { font-size: 1.5em; font-family: arial; font-weight: bold; margin-bottom: 0.3em; }
+	.date { position: absolute; right: 1em; }
+	.entry { padding-top: 0.5em; border-top: 1px solid black; }
+	.entry:first-child { border-top: 0 solid; }
+	.entry { margin-bottom: 1em; }
 </style>
 </head>
 <body>
@@ -25,8 +24,11 @@
 	</div>
 	<div class="content">
 		{% for entry in entries %}
-			<div class="title">{{ entry.title }}</div>
-			<div class="text">{{ entry.text }}</div>
+			<div class="entry">
+				<div class="date">{{ entry.created|date:"Y-m-d" }}</div>
+				<div class="title">{{ entry.title }}</div>
+				<div class="text">{{ entry.text }}</div>
+			</div>
 		{% empty %}
 			No entries yet, please check back later!
 		{% endfor %}

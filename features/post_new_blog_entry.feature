@@ -8,3 +8,4 @@ Feature: post new blog entry
         And I click on the "Post" button
         Then I should see the home page
         And I should see the new blog entry with the entered random data
+        And I should see that the blog entry created today

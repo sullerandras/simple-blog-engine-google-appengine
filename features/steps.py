@@ -3,7 +3,7 @@ from lettuce import step, world, before, after
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
-import random
+import random, datetime
 
 BASE_URL = 'http://localhost:8080'
 
@@ -142,3 +142,9 @@ def and_i_should_see_the_new_blog_entry_with_the_entered_random_data(step):
     assert world.title in body.text, 'I should see "%s" but only see "%s"' % (world.title, body.text)
     assert world.text in world.browser.page_source,\
         'I should see "%s" but only see "%s"' % (world.text, world.browser.page_source)
+
+@step(u'And I should see that the blog entry created today')
+def and_i_should_see_that_the_blog_entry_created_today(step):
+    body = world.browser.find_element_by_tag_name('body')
+    today = datetime.datetime.now().strftime('%Y-%m-%d')
+    assert today in body.text, 'I should see the current date %s but only see %s' % (today, body.text)
