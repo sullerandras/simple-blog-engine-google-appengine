@@ -148,3 +148,12 @@ def and_i_should_see_that_the_blog_entry_created_today(step):
     body = world.browser.find_element_by_tag_name('body')
     today = datetime.datetime.now().strftime('%Y-%m-%d')
     assert today in body.text, 'I should see the current date %s but only see %s' % (today, body.text)
+
+@step(u'When I fill out the details with long random data')
+def when_i_fill_out_the_details_with_long_random_data(step):
+    title = world.browser.find_element_by_name('title')
+    world.title = get_random_text(20, False)
+    title.send_keys(world.title)
+    text = world.browser.find_element_by_name('text')
+    world.text = get_random_text(600, True)
+    text.send_keys(world.text)

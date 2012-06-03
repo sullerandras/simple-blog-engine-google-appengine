@@ -100,11 +100,13 @@ class NewBlogEntryPageTestCase(BaseTestCase):
         self.assertRegexpMatches(s, r'<button type="submit"[^>]*>Post</button>')
 
 class PostNewBlogEntryTestCase(BaseTestCase):
-    def testPostNewBlogEntry(self):
+    def createNewBlogEntryHandler(self, textLength = 200):
         class MockRequest(object):
-            def __init__(self):
+            def __init__(self, textLength):
                 self.uri = 'http://mockhost'
-                self.POST = {'title': 'asdsad', 'text': 'my\ntext'}
+                # multiply a 10 character string to reach the expected length
+                self.text = 'short\ntext' * (textLength / 10)
+                self.POST = {'title': 'asdsad', 'text': self.text}
 
         class MockResponse(object):
             def __init__(self):
@@ -115,6 +117,12 @@ class PostNewBlogEntryTestCase(BaseTestCase):
             def clear(self):
                 pass
 
+        handler = NewBlogEntryHandler()
+        handler.request = MockRequest(textLength)
+        handler.response = MockResponse()
+        return handler
+
+    def testPostNewBlogEntry(self, textLength = 200):
         self.testbed.setup_env(
             USER_EMAIL = 'admin@example.com',
             USER_ID = '123',
@@ -122,14 +130,15 @@ class PostNewBlogEntryTestCase(BaseTestCase):
             overwrite = True)
 
         self.assertEqual(0, BlogEntry.all().count())
-        handler = NewBlogEntryHandler()
-        handler.request = MockRequest()
-        handler.response = MockResponse()
+        handler = self.createNewBlogEntryHandler(textLength = textLength)
         handler.post()
         self.assertEqual(1, BlogEntry.all().count())
         e = BlogEntry.all().get()
         self.assertEqual('asdsad', e.title)
-        self.assertEqual('my\ntext', e.text)
+        self.assertEqual(handler.request.text, e.text)
+
+    def testPostNewBlogEntryWithLongText(self):
+        self.testPostNewBlogEntry(textLength = 2000)
 
     def testRenderingBlogEntries(self):
         self.assertEqual(0, BlogEntry.all().count())
