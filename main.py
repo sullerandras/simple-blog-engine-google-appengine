@@ -39,7 +39,7 @@ class BaseRequestHandler(webapp.RequestHandler):
 
 class IndexHandler(BaseRequestHandler):
     def render(self):
-        entries = models.BlogEntry.all()
+        entries = models.BlogEntry.all().order('-created')
         return self.renderTemplate('index.html', {
             'new_blog_entry_url': '/new',
             'entries': entries

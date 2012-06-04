@@ -27,6 +27,15 @@ class GuestVisitHomePageTestCase(BaseTestCase):
         s = handler.render()
         self.assertRegexpMatches(s, "No entries yet, please check back later!")
 
+    def testWithTwoBlogEntries(self):
+        BlogEntry(title = 'entry1', text = 'entry1').save()
+        BlogEntry(title = 'entry2', text = 'entry2').save()
+        s = IndexHandler().render()
+        self.assertIn('entry2', s)
+        self.assertIn('entry1', s)
+        self.assertLess(s.index('entry2'), s.index('entry1'))
+
+
 class SignInTestCase(BaseTestCase):
     def testGuest(self):
         handler = IndexHandler()

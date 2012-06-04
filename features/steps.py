@@ -61,6 +61,22 @@ def then_i_should_see_the_message(step, msg):
     body = world.browser.find_element_by_tag_name('body')
     assert msg in body.text, "I should see '%s', but I see '%s'" % (msg, body.text)
 
+@step(u'And I add a new blog entry "([^"]*)"')
+def and_i_add_a_new_blog_entry(step, title):
+    step.behave_as("""
+        Given I am on the "New blog entry" page
+        And I fill out the details with "{title}"
+        And I click on the "Post" button
+    """.format(title = title))
+
+@step(u'Then I should see these two blog entries in "([^"]*)", "([^"]*)" order')
+def then_i_should_see_these_two_blog_entries_in_order(step, first, second):
+    body = world.browser.find_element_by_tag_name('body')
+    assert first in body.text, "I should see '%s', but I see '%s'" % (first, body.text)
+    assert second in body.text, "I should see '%s', but I see '%s'" % (second, body.text)
+    assert body.text.index(first) < body.text.index(second),\
+        "'%s' should occur before '%s', but the result string is '%s'" % (first, second, body.text)
+
 
 @step(u'Given I am a guest user')
 def given_i_am_a_guest_user(step):
@@ -113,8 +129,8 @@ def and_i_should_see_a_button(step, name):
     world.browser.find_element_by_xpath("//button[contains(text(), '%s')]" % name)
 
 
-@step(u'And I am on the "New blog entry" page')
-def and_i_am_on_the_page(step):
+@step(u'I am on the "New blog entry" page')
+def i_am_on_the_new_blog_entry_page(step):
     load_page('/new')
 
 @step(u'When I fill out the details with random data')
@@ -125,6 +141,13 @@ def when_i_fill_out_the_details_with_random_data(step):
     text = world.browser.find_element_by_name('text')
     world.text = get_random_text(200, True)
     text.send_keys(world.text)
+
+@step(u'And I fill out the details with "([^"]*)"')
+def and_i_fill_out_the_details_with(step, param):
+    title = world.browser.find_element_by_name('title')
+    title.send_keys(param)
+    text = world.browser.find_element_by_name('text')
+    text.send_keys(param)
 
 @step(u'And I click on the "([^"]*)" button')
 def and_i_click_on_the_button(step, name):
