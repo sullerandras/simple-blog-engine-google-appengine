@@ -135,19 +135,14 @@ def i_am_on_the_new_blog_entry_page(step):
 
 @step(u'When I fill out the details with random data')
 def when_i_fill_out_the_details_with_random_data(step):
-    title = world.browser.find_element_by_name('title')
     world.title = get_random_text(20, False)
-    title.send_keys(world.title)
-    text = world.browser.find_element_by_name('text')
     world.text = get_random_text(200, True)
-    text.send_keys(world.text)
+    fill_out_the_details_with(step, world.title, world.text)
 
 @step(u'And I fill out the details with "([^"]*)"')
-def and_i_fill_out_the_details_with(step, param):
-    title = world.browser.find_element_by_name('title')
-    title.send_keys(param)
-    text = world.browser.find_element_by_name('text')
-    text.send_keys(param)
+def fill_out_the_details_with(step, title, text = None):
+    world.browser.find_element_by_name('title').send_keys(title)
+    world.browser.find_element_by_name('text').send_keys(text or title)
 
 @step(u'And I click on the "([^"]*)" button')
 def and_i_click_on_the_button(step, name):
@@ -174,9 +169,6 @@ def and_i_should_see_that_the_blog_entry_created_today(step):
 
 @step(u'When I fill out the details with long random data')
 def when_i_fill_out_the_details_with_long_random_data(step):
-    title = world.browser.find_element_by_name('title')
     world.title = get_random_text(20, False)
-    title.send_keys(world.title)
-    text = world.browser.find_element_by_name('text')
     world.text = get_random_text(600, True)
-    text.send_keys(world.text)
+    fill_out_the_details_with(step, world.title, world.text)
