@@ -20,93 +20,78 @@ class BaseTestCase(unittest.TestCase):
     def tearDown(self):
         self.testbed.deactivate()
 
+    def signInAsUser(self):
+        self.testbed.setup_env(
+            USER_EMAIL = 'user@example.com',
+            USER_ID = '123',
+            USER_IS_ADMIN = '0',
+            overwrite = True)
+
+    def signInAsAdmin(self):
+        self.testbed.setup_env(
+            USER_EMAIL = 'admin@example.com',
+            USER_ID = '1',
+            USER_IS_ADMIN = '1',
+            overwrite = True)
+
 class GuestVisitHomePageTestCase(BaseTestCase):
     def testWithNoBlogEntries(self):
         self.assertEqual(0, BlogEntry.all().count())
-        handler = IndexHandler()
-        s = handler.render()
-        self.assertRegexpMatches(s, "No entries yet, please check back later!")
+        result = IndexHandler().render()
+        self.assertRegexpMatches(result, "No entries yet, please check back later!")
 
     def testWithTwoBlogEntries(self):
         BlogEntry(title = 'entry1', text = 'entry1').save()
         BlogEntry(title = 'entry2', text = 'entry2').save()
-        s = IndexHandler().render()
-        self.assertIn('entry2', s)
-        self.assertIn('entry1', s)
-        self.assertLess(s.index('entry2'), s.index('entry1'))
+        result = IndexHandler().render()
+        self.assertIn('entry2', result)
+        self.assertIn('entry1', result)
+        self.assertLess(result.index('entry2'), result.index('entry1'))
 
 
 class SignInTestCase(BaseTestCase):
     def testGuest(self):
-        handler = IndexHandler()
-        s = handler.render()
-        self.assertRegexpMatches(s, r"<a href=[^>]+>Sign in</a>")
+        result = IndexHandler().render()
+        self.assertRegexpMatches(result, r"<a href=[^>]+>Sign in</a>")
 
     def testSignedIn(self):
-        self.testbed.setup_env(
-            USER_EMAIL = 'user@example.com',
-            USER_ID = '123',
-            USER_IS_ADMIN = '0',
-            overwrite = True)
-        handler = IndexHandler()
-        s = handler.render()
-        self.assertNotRegexpMatches(s, r"<a href=[^>]+>Sign in</a>")
+        self.signInAsUser()
+        result = IndexHandler().render()
+        self.assertNotRegexpMatches(result, r"<a href=[^>]+>Sign in</a>")
 
 class SignOutTestCase(BaseTestCase):
     def testGuest(self):
-        handler = IndexHandler()
-        s = handler.render()
-        self.assertNotRegexpMatches(s, r"<a href=[^>]+>Sign out</a>")
+        result = IndexHandler().render()
+        self.assertNotRegexpMatches(result, r"<a href=[^>]+>Sign out</a>")
 
     def testSignedIn(self):
-        self.testbed.setup_env(
-            USER_EMAIL = 'user@example.com',
-            USER_ID = '123',
-            USER_IS_ADMIN = '0',
-            overwrite = True)
-        handler = IndexHandler()
-        s = handler.render()
-        self.assertRegexpMatches(s, r"<a href=[^>]+>Sign out</a>")
+        self.signInAsUser()
+        result = IndexHandler().render()
+        self.assertRegexpMatches(result, r"<a href=[^>]+>Sign out</a>")
 
 class NewBlogEntryLinkTestCase(BaseTestCase):
     def testAdmin(self):
-        self.testbed.setup_env(
-            USER_EMAIL = 'admin@example.com',
-            USER_ID = '123',
-            USER_IS_ADMIN = '1',
-            overwrite = True)
-        handler = IndexHandler()
-        s = handler.render()
-        self.assertRegexpMatches(s, r"<a href=[^>]+>New blog entry</a>")
+        self.signInAsAdmin()
+        result = IndexHandler().render()
+        self.assertRegexpMatches(result, r"<a href=[^>]+>New blog entry</a>")
 
     def testSignedIn(self):
-        self.testbed.setup_env(
-            USER_EMAIL = 'user@example.com',
-            USER_ID = '123',
-            USER_IS_ADMIN = '0',
-            overwrite = True)
-        handler = IndexHandler()
-        s = handler.render()
-        self.assertNotRegexpMatches(s, r"<a href=[^>]+>New blog entry</a>")
+        self.signInAsUser()
+        result = IndexHandler().render()
+        self.assertNotRegexpMatches(result, r"<a href=[^>]+>New blog entry</a>")
 
     def testGuest(self):
-        handler = IndexHandler()
-        s = handler.render()
-        self.assertNotRegexpMatches(s, r"<a href=[^>]+>New blog entry</a>")
+        result = IndexHandler().render()
+        self.assertNotRegexpMatches(result, r"<a href=[^>]+>New blog entry</a>")
 
 class NewBlogEntryPageTestCase(BaseTestCase):
     def testAdmin(self):
-        self.testbed.setup_env(
-            USER_EMAIL = 'admin@example.com',
-            USER_ID = '123',
-            USER_IS_ADMIN = '1',
-            overwrite = True)
-        handler = NewBlogEntryHandler()
-        s = handler.render()
-        self.assertRegexpMatches(s, r'<[^>]+>New blog entry</[^>]+>')
-        self.assertRegexpMatches(s, r'<[^>]+ name="title"[^>]*>')
-        self.assertRegexpMatches(s, r'<[^>]+ name="text"[^>]*>')
-        self.assertRegexpMatches(s, r'<button type="submit"[^>]*>Post</button>')
+        self.signInAsAdmin()
+        result = NewBlogEntryHandler().render()
+        self.assertRegexpMatches(result, r'<[^>]+>New blog entry</[^>]+>')
+        self.assertRegexpMatches(result, r'<[^>]+ name="title"[^>]*>')
+        self.assertRegexpMatches(result, r'<[^>]+ name="text"[^>]*>')
+        self.assertRegexpMatches(result, r'<button type="submit"[^>]*>Post</button>')
 
 class PostNewBlogEntryTestCase(BaseTestCase):
     def createNewBlogEntryHandler(self, textLength = 200):
@@ -132,11 +117,7 @@ class PostNewBlogEntryTestCase(BaseTestCase):
         return handler
 
     def testPostNewBlogEntry(self, textLength = 200):
-        self.testbed.setup_env(
-            USER_EMAIL = 'admin@example.com',
-            USER_ID = '123',
-            USER_IS_ADMIN = '1',
-            overwrite = True)
+        self.signInAsAdmin()
 
         self.assertEqual(0, BlogEntry.all().count())
         handler = self.createNewBlogEntryHandler(textLength = textLength)
@@ -153,12 +134,11 @@ class PostNewBlogEntryTestCase(BaseTestCase):
         self.assertEqual(0, BlogEntry.all().count())
         BlogEntry(title = 'asdsad', text = 'my text').save()
         self.assertEqual(1, BlogEntry.all().count())
-        handler = IndexHandler()
-        s = handler.render()
+        result = IndexHandler().render()
         today = datetime.datetime.now().strftime('%Y-%m-%d')
-        self.assertRegexpMatches(s, r'<[^>]+ class="title"[^>]*>asdsad</')
-        self.assertRegexpMatches(s, r'<[^>]+ class="text"[^>]*>my text</')
-        self.assertRegexpMatches(s, r'<[^>]+ class="date"[^>]*>%s</' % today)
+        self.assertRegexpMatches(result, r'<[^>]+ class="title"[^>]*>asdsad</')
+        self.assertRegexpMatches(result, r'<[^>]+ class="text"[^>]*>my text</')
+        self.assertRegexpMatches(result, r'<[^>]+ class="date"[^>]*>%s</' % today)
 
 class XsrfTokenTestCase(BaseTestCase):
     def testXsrfToken(self):
@@ -168,8 +148,8 @@ class XsrfTokenTestCase(BaseTestCase):
 
         handler = XsrfTokenHandler()
         handler.request = MockRequest()
-        s = handler.render()
-        self.assertEqual(s, admin.get_xsrf_token())
+        result = handler.render()
+        self.assertEqual(result, admin.get_xsrf_token())
 
 if __name__ == '__main__':
     unittest.main()
