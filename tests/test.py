@@ -156,6 +156,20 @@ class MarkdownBlogEntryTestCase(BaseTestCase):
             '<p>This is an example post using <a href="http://a.b">Markdown</a>.</p></')
         self.assertRegexpMatches(result, r'<[^>]+ class="date"[^>]*>%s</' % today)
 
+class EditBlogEntryTestCase(BaseTestCase):
+    def testEditLink(self):
+        # Given there are no blog entries in the database
+        self.assertEqual(0, BlogEntry.all().count())
+        # And I am signed in as admin
+        self.signInAsAdmin()
+        # And I add a new blog entry "entry1"
+        BlogEntry(title = 'entry1', text = 'entry1').save()
+        self.assertEqual(1, BlogEntry.all().count())
+        # When I visit the home page
+        result = IndexHandler().render()
+        # Then I should see a "Edit" link
+        self.assertRegexpMatches(result, r"<a href=[^>]+>Edit</a>")
+
 class XsrfTokenTestCase(BaseTestCase):
     def testXsrfToken(self):
         class MockRequest(object):

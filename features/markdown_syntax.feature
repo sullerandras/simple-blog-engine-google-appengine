@@ -17,7 +17,7 @@ Feature: markdown syntax
             """
         And I click on the "Post" button
         Then I should see the home page
-        And I should see the new blog entry with the title "markdown test"
+        And I should see the blog entry with "title": "markdown test"
         And I should see the text in HTML:
             """
             <h1>Hello Markdown</h1>

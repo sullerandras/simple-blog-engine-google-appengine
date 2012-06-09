@@ -26,6 +26,16 @@ def before_each_scenario(scenario):
 def load_page(page):
     world.browser.get("%s%s" % (BASE_URL, page))
 
+def assert_i_am_on_page(page):
+    """ Asserts that the url is BASE_URLpage (excluding get parameters and hash). """
+    assert page == '' or page[0] == '/', 'page should starts with "/"'
+    url = world.browser.current_url
+    expected = '%s%s' % (BASE_URL, page)
+    assert url.startswith(expected), \
+        'I should be on page %s, but the url is %s' % (page, url)
+    assert len(url) == len(expected) or url[len(expected)] in ['?', '#'], \
+        'I should be on page %s, but the url is %s' % (page, url)
+
 def get_random_text(length, multiline):
     s = ''
     for i in xrange(length):
@@ -52,8 +62,8 @@ def given_there_are_no_blog_entries_in_the_database(step):
                                       'db.delete(db.Query())',
                                  'xsrf_token': body.text}))
 
-@step(u'When I visit the home page')
-def when_i_visit_the_home_page(step):
+@step(u'I visit the home page')
+def i_visit_the_home_page(step):
     load_page('/')
 
 @step(u'Then I should see the message "([^"]*)"')
@@ -110,22 +120,21 @@ def given_i_am_signed_in_as_admin(step):
     world.browser.find_element_by_id('submit-login').click()
 
 
-@step(u'And I click on the "([^"]*)" link')
-def and_i_click_on_the_link(step, link):
+@step(u'I click on the "([^"]*)" link')
+def i_click_on_the_link(step, link):
     world.browser.find_element_by_link_text(link).click()
 
 @step(u'Then I should see the "New blog entry" page')
 def then_i_should_see_the_page(step):
-    assert world.browser.current_url.endswith('/new'),\
-        'The url should ends with "/new", but it is %s' % world.browser.current_url
+    assert_i_am_on_page('/new')
     world.browser.find_element_by_xpath("//*[text() = 'New blog entry']")
 
 @step(u'I should see an input for "([^"]*)"')
 def i_should_see_an_input_for(step, name):
     world.browser.find_element_by_name(name)
 
-@step(u'And I should see a "([^"]*)" button')
-def and_i_should_see_a_button(step, name):
+@step(u'I should see a "([^"]*)" button')
+def i_should_see_a_button(step, name):
     world.browser.find_element_by_xpath("//button[contains(text(), '%s')]" % name)
 
 
@@ -150,9 +159,7 @@ def and_i_click_on_the_button(step, name):
 
 @step(u'Then I should see the home page')
 def then_i_should_see_the_home_page(step):
-    url = '%s/' % BASE_URL
-    assert world.browser.current_url == url,\
-        'The url should be %s, but it is %s' % (url, world.browser.current_url)
+    assert_i_am_on_page('/')
 
 @step(u'And I should see the new blog entry with the entered random data')
 def and_i_should_see_the_new_blog_entry_with_the_entered_random_data(step):
@@ -173,8 +180,8 @@ def when_i_fill_out_the_details_with_long_random_data(step):
     world.text = get_random_text(600, True)
     fill_out_the_details_with(step, world.title, world.text)
 
-@step(u'When I fill out the "([^"]*)" field with "([^"]*)"')
-def when_i_fill_out_the_field_with(step, field, text):
+@step(u'I fill out the "([^"]*)" field with "([^"]*)"')
+def i_fill_out_the_field_with(step, field, text):
     world.browser.find_element_by_name(field).send_keys(text)
 
 @step(u'And I fill out the "([^"]*)" field with:')
@@ -182,13 +189,20 @@ def and_i_fill_out_the_field_with(step, field):
     assert step.multiline
     world.browser.find_element_by_name(field).send_keys(step.multiline)
 
-@step(u'And I should see the new blog entry with the title "([^"]*)"')
-def and_i_should_see_the_new_blog_entry_with_the_title(step, title):
-    elems = world.browser.find_elements_by_class_name("title")
-    assert len(elems) == 1
-    assert elems[0].text == title
-
 @step(u'And I should see the text in HTML')
 def and_i_should_see_the_text_in_html(step):
     assert step.multiline in world.browser.page_source,\
         'I should see "%s" but only see "%s"' % (step.multiline, world.browser.page_source)
+
+
+@step(u'Then I should see the "Edit blog entry" page')
+def then_i_should_see_the_edit_blog_entry_page(step):
+    assert_i_am_on_page('/edit')
+    world.browser.find_element_by_xpath("//*[text() = 'Edit blog entry']")
+
+@step(u'And I should see the blog entry with "([^"]*)": "([^"]*)"')
+def and_i_should_see_the_blog_entry_with_field_value(step, field, value):
+    assert field in ['title', 'text']
+    elems = world.browser.find_elements_by_class_name(field)
+    assert len(elems) == 1
+    assert elems[0].text == value
