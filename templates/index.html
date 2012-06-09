@@ -29,7 +29,9 @@
 				<div class="date">{{ entry.created|date:"Y-m-d" }}</div>
 				<div class="title">{{ entry.title }}</div>
 				<div class="text">{{ entry.text|safe }}</div>
+				{% if is_admin %}
 				<div class="edit"><a href="/edit?id={{ entry.key.id }}">Edit</a></div>
+				{% endif %}
 			</div>
 		{% empty %}
 			No entries yet, please check back later!

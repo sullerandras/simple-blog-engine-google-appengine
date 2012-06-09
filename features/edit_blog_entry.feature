@@ -10,6 +10,23 @@ Feature: edit blog entry
         When I visit the home page
         Then I should see a "Edit" link
 
+    Scenario: No edit links for guests
+        Given there are no blog entries in the database
+        And I am signed in as admin
+        And I add a new blog entry "entry1"
+        And I click on the "Sign out" link
+        When I visit the home page
+        Then I should not see the "Edit" link
+
+    Scenario: No edit links for signed in users
+        Given there are no blog entries in the database
+        And I am signed in as admin
+        And I add a new blog entry "entry1"
+        And I click on the "Sign out" link
+        And I am a signed in user
+        When I visit the home page
+        Then I should not see the "Edit" link
+
     Scenario: Edit blog entry page
         Given there are no blog entries in the database
         And I am signed in as admin

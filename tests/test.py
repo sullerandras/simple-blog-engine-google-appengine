@@ -5,7 +5,7 @@ from google.appengine.ext import testbed
 from google.appengine.ext import admin
 
 from models import BlogEntry
-from main import IndexHandler, NewBlogEntryHandler, XsrfTokenHandler
+from main import IndexHandler, NewBlogEntryHandler, XsrfTokenHandler, EditBlogEntryHandler
 
 class BaseTestCase(unittest.TestCase):
     def setUp(self):
@@ -157,7 +157,7 @@ class MarkdownBlogEntryTestCase(BaseTestCase):
         self.assertRegexpMatches(result, r'<[^>]+ class="date"[^>]*>%s</' % today)
 
 class EditBlogEntryTestCase(BaseTestCase):
-    def testEditLink(self):
+    def testEditLinkForAdmin(self):
         # Given there are no blog entries in the database
         self.assertEqual(0, BlogEntry.all().count())
         # And I am signed in as admin
@@ -169,6 +169,93 @@ class EditBlogEntryTestCase(BaseTestCase):
         result = IndexHandler().render()
         # Then I should see a "Edit" link
         self.assertRegexpMatches(result, r"<a href=[^>]+>Edit</a>")
+
+    def testNoEditLinkForGuest(self):
+        # Given there is a blog entry in the database
+        BlogEntry(title = 'entry1', text = 'entry1').save()
+        self.assertEqual(1, BlogEntry.all().count())
+        # When I visit the home page
+        result = IndexHandler().render()
+        # Then I should not see the "Edit" link
+        self.assertNotRegexpMatches(result, r"<a href=[^>]+>Edit</a>")
+
+    def testNoEditLinkForUser(self):
+        # Given there is a blog entry in the database
+        BlogEntry(title = 'entry1', text = 'entry1').save()
+        self.assertEqual(1, BlogEntry.all().count())
+        # And I am a signed in user
+        self.signInAsUser()
+        # When I visit the home page
+        result = IndexHandler().render()
+        # Then I should not see the "Edit" link
+        self.assertNotRegexpMatches(result, r"<a href=[^>]+>Edit</a>")
+
+    def createEditBlogEntryHandler(self):
+        class MockRequest(object):
+            def __init__(self):
+                self.uri = 'http://mockhost'
+                self.host = 'mockhost'
+                self.GET = {}
+                self.POST = {'title': 'entry1', 'text': 'entry1'}
+
+        class MockOut(object):
+            def __init__(self):
+                self.buffer = ''
+            def write(self, data):
+                self.buffer += str(data)
+            def __str__(self):
+                return self.buffer
+
+        class MockResponse(object):
+            def __init__(self):
+                self.status = 0
+                self.headers = {}
+                self.out = MockOut()
+            def set_status(self, status):
+                self.status = status
+            def clear(self):
+                pass
+
+        handler = EditBlogEntryHandler()
+        handler.request = MockRequest()
+        handler.response = MockResponse()
+        return handler
+
+    def testEditBlogEntry(self):
+        # Given there is a blog entry in the database
+        entry = BlogEntry(title = 'entry1', text = 'entry1')
+        entry.save()
+        self.assertEqual(1, BlogEntry.all().count())
+        # And I am signed in as admin
+        self.signInAsAdmin()
+        # When I edit the blog entry
+        handler = self.createEditBlogEntryHandler()
+        handler.request.GET['id'] = entry.key().id()
+        handler.get()
+        result = str(handler.response.out)
+        # And I should see an input for "title"
+        self.assertRegexpMatches(result, r'<[^>]+ name="title"[^>]*>')
+        self.assertRegexpMatches(result, r'<[^>]+ value="entry1"[^>]*>')
+        # And I should see an input for "text"
+        self.assertRegexpMatches(result, r'<[^>]+ name="text"[^>]*>')
+        self.assertRegexpMatches(result, r'<textarea[^>]*>entry1<')
+        # And I should see a "Save" button
+        self.assertRegexpMatches(result, r'<button[^>]*>Save</')
+
+        # And I fill out the "title" field with "new title"
+        handler = self.createEditBlogEntryHandler()
+        handler.request.POST['id'] = entry.key().id()
+        handler.request.POST['title'] = 'new title'
+        # And I fill out the "text" field with "new text"
+        handler.request.POST['text'] = 'new text'
+        # And I click on the "Save" button
+        handler.post()
+        # And I should see the blog entry with "title": "new title"
+        self.assertEqual(1, BlogEntry.all().count())
+        entry = BlogEntry.all().get()
+        self.assertEqual('new title', entry.title)
+        # And I should see the blog entry with "text": "new text"
+        self.assertEqual('new text', entry.text)
 
 class XsrfTokenTestCase(BaseTestCase):
     def testXsrfToken(self):

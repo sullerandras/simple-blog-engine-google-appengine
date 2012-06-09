@@ -97,8 +97,8 @@ def then_i_should_see_a_link(step, name):
     world.browser.find_element_by_link_text(name)
 
 
-@step(u'Given I am a signed in user')
-def given_i_am_a_signed_in_user(step):
+@step(u'I am a signed in user')
+def i_am_a_signed_in_user(step):
     load_page('/')
     world.browser.find_element_by_link_text('Sign in').click()
     world.browser.find_element_by_id('submit-login').click()
@@ -182,12 +182,16 @@ def when_i_fill_out_the_details_with_long_random_data(step):
 
 @step(u'I fill out the "([^"]*)" field with "([^"]*)"')
 def i_fill_out_the_field_with(step, field, text):
-    world.browser.find_element_by_name(field).send_keys(text)
+    elem = world.browser.find_element_by_name(field)
+    elem.clear()
+    elem.send_keys(text)
 
 @step(u'And I fill out the "([^"]*)" field with:')
 def and_i_fill_out_the_field_with(step, field):
     assert step.multiline
-    world.browser.find_element_by_name(field).send_keys(step.multiline)
+    elem = world.browser.find_element_by_name(field)
+    elem.clear()
+    elem.send_keys(step.multiline)
 
 @step(u'And I should see the text in HTML')
 def and_i_should_see_the_text_in_html(step):
@@ -205,4 +209,5 @@ def and_i_should_see_the_blog_entry_with_field_value(step, field, value):
     assert field in ['title', 'text']
     elems = world.browser.find_elements_by_class_name(field)
     assert len(elems) == 1
-    assert elems[0].text == value
+    assert elems[0].text == value, \
+        'The blog entry\'s %s should be %s, but it is %s' % (field, value, elems[0].text)

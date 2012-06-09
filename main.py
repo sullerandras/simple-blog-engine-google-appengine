@@ -59,6 +59,24 @@ class NewBlogEntryHandler(BaseRequestHandler):
     def render(self):
         return self.renderTemplate('new-blog-entry.html')
 
+class EditBlogEntryHandler(BaseRequestHandler):
+    def post(self):
+        id = self.request.POST.get('id')
+        entry = models.BlogEntry.get_by_id(int(id))
+        title = self.request.POST.get('title')
+        text = self.request.POST.get('text')
+        entry.title = title
+        entry.text = text
+        entry.save()
+        self.redirect('/')
+
+    def render(self):
+        id = self.request.GET.get('id')
+        entry = models.BlogEntry.get_by_id(int(id))
+        return self.renderTemplate('edit-blog-entry.html', {
+            'entry': entry
+            })
+
 class XsrfTokenHandler(BaseRequestHandler):
     def render(self):
         if not self.request.host.startswith('localhost:'):
@@ -69,6 +87,7 @@ class XsrfTokenHandler(BaseRequestHandler):
 app = webapp.WSGIApplication([
         ('/', IndexHandler),
         ('/new', NewBlogEntryHandler),
+        ('/edit', EditBlogEntryHandler),
         ('/xsrf_token', XsrfTokenHandler),
         ],
         debug=True)
