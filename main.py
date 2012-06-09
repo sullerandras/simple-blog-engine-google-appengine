@@ -40,9 +40,10 @@ class BaseRequestHandler(webapp.RequestHandler):
 
 class IndexHandler(BaseRequestHandler):
     def render(self):
-        entries = [e for e in models.BlogEntry.all().order('-created')]
-        for e in entries:
-            e.text = markdown.markdown(e.text)
+        entries = []
+        for entry in models.BlogEntry.all().order('-created'):
+            entry.text = markdown.markdown(entry.text)
+            entries.append(entry)
         return self.renderTemplate('index.html', {
             'new_blog_entry_url': '/new',
             'entries': entries
