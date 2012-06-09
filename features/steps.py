@@ -172,3 +172,23 @@ def when_i_fill_out_the_details_with_long_random_data(step):
     world.title = get_random_text(20, False)
     world.text = get_random_text(600, True)
     fill_out_the_details_with(step, world.title, world.text)
+
+@step(u'When I fill out the "([^"]*)" field with "([^"]*)"')
+def when_i_fill_out_the_field_with(step, field, text):
+    world.browser.find_element_by_name(field).send_keys(text)
+
+@step(u'And I fill out the "([^"]*)" field with:')
+def and_i_fill_out_the_field_with(step, field):
+    assert step.multiline
+    world.browser.find_element_by_name(field).send_keys(step.multiline)
+
+@step(u'And I should see the new blog entry with the title "([^"]*)"')
+def and_i_should_see_the_new_blog_entry_with_the_title(step, title):
+    elems = world.browser.find_elements_by_class_name("title")
+    assert len(elems) == 1
+    assert elems[0].text == title
+
+@step(u'And I should see the text in HTML')
+def and_i_should_see_the_text_in_html(step):
+    assert step.multiline in world.browser.page_source,\
+        'I should see "%s" but only see "%s"' % (step.multiline, world.browser.page_source)

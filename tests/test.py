@@ -137,7 +137,23 @@ class PostNewBlogEntryTestCase(BaseTestCase):
         result = IndexHandler().render()
         today = datetime.datetime.now().strftime('%Y-%m-%d')
         self.assertRegexpMatches(result, r'<[^>]+ class="title"[^>]*>asdsad</')
-        self.assertRegexpMatches(result, r'<[^>]+ class="text"[^>]*>my text</')
+        self.assertRegexpMatches(result, r'<[^>]+ class="text"[^>]*><p>my text</p></')
+        self.assertRegexpMatches(result, r'<[^>]+ class="date"[^>]*>%s</' % today)
+
+class MarkdownBlogEntryTestCase(BaseTestCase):
+    def testRenderingBlogEntriesWithMarkdown(self):
+        self.assertEqual(0, BlogEntry.all().count())
+        BlogEntry(title = 'asdsad', text = 'Hello Markdown\n'+
+            '==\n'+
+            '\n'+
+            'This is an example post using [Markdown](http://a.b).').save()
+        self.assertEqual(1, BlogEntry.all().count())
+        result = IndexHandler().render()
+        today = datetime.datetime.now().strftime('%Y-%m-%d')
+        self.assertRegexpMatches(result, r'<[^>]+ class="title"[^>]*>asdsad</')
+        self.assertRegexpMatches(result, r'<[^>]+ class="text"[^>]*><h1>Hello Markdown</h1>'+
+            '[^<]*'+
+            '<p>This is an example post using <a href="http://a.b">Markdown</a>.</p></')
         self.assertRegexpMatches(result, r'<[^>]+ class="date"[^>]*>%s</' % today)
 
 class XsrfTokenTestCase(BaseTestCase):

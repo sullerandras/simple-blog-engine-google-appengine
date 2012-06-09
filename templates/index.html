@@ -28,7 +28,7 @@
 			<div class="entry">
 				<div class="date">{{ entry.created|date:"Y-m-d" }}</div>
 				<div class="title">{{ entry.title }}</div>
-				<div class="text">{{ entry.text }}</div>
+				<div class="text">{{ entry.text|safe }}</div>
 			</div>
 		{% empty %}
 			No entries yet, please check back later!

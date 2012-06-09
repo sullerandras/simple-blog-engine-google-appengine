@@ -5,6 +5,7 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 
 import models
+import markdown
 
 _DEBUG = True
 
@@ -39,7 +40,9 @@ class BaseRequestHandler(webapp.RequestHandler):
 
 class IndexHandler(BaseRequestHandler):
     def render(self):
-        entries = models.BlogEntry.all().order('-created')
+        entries = [e for e in models.BlogEntry.all().order('-created')]
+        for e in entries:
+            e.text = markdown.markdown(e.text)
         return self.renderTemplate('index.html', {
             'new_blog_entry_url': '/new',
             'entries': entries
