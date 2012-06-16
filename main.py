@@ -6,6 +6,7 @@ from google.appengine.ext.webapp import template
 
 import models
 import markdown
+import settings
 
 _DEBUG = True
 
@@ -28,7 +29,8 @@ class BaseRequestHandler(webapp.RequestHandler):
             'user': users.get_current_user(),
             'is_admin': users.is_current_user_admin(),
             'login_url': users.create_login_url(req.uri),
-            'logout_url': users.create_logout_url('http://%s/' % (req.host,))
+            'logout_url': users.create_logout_url('http://%s%s' % (req.host, settings.URLS['index'])),
+            'URLS': settings.URLS,
             }
         values.update(template_values)
         directory = os.path.dirname(__file__)
@@ -45,7 +47,6 @@ class IndexHandler(BaseRequestHandler):
             entry.text = markdown.markdown(entry.text)
             entries.append(entry)
         return self.renderTemplate('index.html', {
-            'new_blog_entry_url': '/new',
             'entries': entries
             })
 
@@ -54,7 +55,7 @@ class NewBlogEntryHandler(BaseRequestHandler):
         title = self.request.POST.get('title')
         text = self.request.POST.get('text')
         models.BlogEntry(title = title, text = text).save()
-        self.redirect('/')
+        self.redirect(settings.URLS['index'])
 
     def render(self):
         return self.renderTemplate('new-blog-entry.html')
@@ -68,7 +69,7 @@ class EditBlogEntryHandler(BaseRequestHandler):
         entry.title = title
         entry.text = text
         entry.save()
-        self.redirect('/')
+        self.redirect(settings.URLS['index'])
 
     def render(self):
         id = self.request.GET.get('id')
@@ -85,9 +86,9 @@ class XsrfTokenHandler(BaseRequestHandler):
         return admin.get_xsrf_token()
 
 app = webapp.WSGIApplication([
-        ('/', IndexHandler),
-        ('/new', NewBlogEntryHandler),
-        ('/edit', EditBlogEntryHandler),
-        ('/xsrf_token', XsrfTokenHandler),
+        (settings.BASE + '/', IndexHandler),
+        (settings.BASE + '/new', NewBlogEntryHandler),
+        (settings.BASE + '/edit', EditBlogEntryHandler),
+        (settings.BASE + '/xsrf_token', XsrfTokenHandler),
         ],
         debug=True)

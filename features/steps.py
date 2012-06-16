@@ -5,7 +5,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 import random, datetime
 
-BASE_URL = 'http://localhost:8080'
+BASE_URL = 'http://localhost:8080/blog'
 
 # ======================== HOOKS ==========================
 

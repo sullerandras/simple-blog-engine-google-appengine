@@ -22,7 +22,7 @@
 		<a href="{{ login_url }}">Sign in</a>
 		{% endif %}
 		{% if is_admin %}
-		<a href="{{ new_blog_entry_url }}">New blog entry</a>
+		<a href="{{ URLS.new_blog_entry }}">New blog entry</a>
 		{% endif %}
 	</div>
 	<div class="content">
@@ -32,7 +32,7 @@
 				<div class="title">{{ entry.title }}</div>
 				<div class="text">{{ entry.text|safe }}</div>
 				{% if is_admin %}
-				<div class="edit"><a href="/edit?id={{ entry.key.id }}">Edit</a></div>
+				<div class="edit"><a href="{{ URLS.edit_blog_entry }}?id={{ entry.key.id }}">Edit</a></div>
 				{% endif %}
 			</div>
 		{% empty %}

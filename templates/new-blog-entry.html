@@ -11,7 +11,7 @@
 </head>
 <body>
 <h1>New blog entry</h1>
-<form method="POST" action="/new">
+<form method="POST" action="{{ URLS.new_blog_entry }}">
 	<input name="title">
 	<textarea name="text"></textarea>
 	<button type="submit">Post</button>
