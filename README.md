@@ -32,7 +32,7 @@ Code coverage
 
 2. run unit tests with coverage:
 
-        coverage run --omit=/Applications*,/System*,/Library* test_runner.py /usr/local/google_appengine tests
+        coverage run --omit=/Applications*,/System*,/Library*,markdown* test_runner.py /usr/local/google_appengine tests
 
 3. see the coverage report:
 
