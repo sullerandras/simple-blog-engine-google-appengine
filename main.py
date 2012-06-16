@@ -4,9 +4,12 @@ from google.appengine.api import users
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 
-import models
-import markdown
-import settings
+try:
+    # import blog modules. this is the normal case
+    from blog import models, markdown, settings
+except ImportError, e:
+    # when we run unit tests, it will fallback to this
+    import models, markdown, settings
 
 _DEBUG = True
 
@@ -85,10 +88,16 @@ class XsrfTokenHandler(BaseRequestHandler):
         from google.appengine.ext import admin
         return admin.get_xsrf_token()
 
-app = webapp.WSGIApplication([
+def main():
+    app = webapp.WSGIApplication([
         (settings.BASE + '/', IndexHandler),
         (settings.BASE + '/new', NewBlogEntryHandler),
         (settings.BASE + '/edit', EditBlogEntryHandler),
         (settings.BASE + '/xsrf_token', XsrfTokenHandler),
         ],
         debug=True)
+    from google.appengine.ext.webapp.util import run_wsgi_app
+    run_wsgi_app(app)
+
+if __name__ == '__main__':
+  main()
