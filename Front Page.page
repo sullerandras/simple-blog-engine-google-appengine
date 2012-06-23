@@ -1,12 +1,39 @@
-# Welcome to Gitit!
+Blog engine for Google App Engine
+==
 
-This is the front page of your new gitit wiki.  You can edit this
-page by clicking on the "edit" tab at the top of the screen.
-For instructions on how to make a link to another wiki page, see [the
-Help page](Help#wiki-links). To create a new wiki page, just create a
-link to it and follow the link.
+Run end-to-end tests
+--
 
-Help is always available through the "Help" link in the sidebar.
-More details on installing and configurating gitit are available
-in the [Gitit User's Guide]().
+1. install lettuce
+2. install selenium driver for python
+3. install Firefox
+4. run tests with `lettuce` (it will start Firefox)
 
+Run unit tests
+--
+
+[Guide](https://developers.google.com/appengine/docs/python/tools/localunittesting)
+
+1. install unittest2:
+
+        pip install unittest2
+
+2. run unit tests:
+
+        python test_runner.py /usr/local/google_appengine tests
+
+
+Code coverage
+--
+
+1. install [coverage](http://pypi.python.org/pypi/coverage):
+
+        pip install coverage
+
+2. run unit tests with coverage:
+
+        coverage run --omit=/Applications*,/System*,/Library*,markdown* test_runner.py /usr/local/google_appengine tests
+
+3. see the coverage report:
+
+        coverage report -m
