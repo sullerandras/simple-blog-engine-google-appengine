@@ -88,16 +88,17 @@ class XsrfTokenHandler(BaseRequestHandler):
         from google.appengine.ext import admin
         return admin.get_xsrf_token()
 
+app = webapp.WSGIApplication([
+    (settings.BASE + '/', IndexHandler),
+    (settings.BASE + '/new', NewBlogEntryHandler),
+    (settings.BASE + '/edit', EditBlogEntryHandler),
+    (settings.BASE + '/xsrf_token', XsrfTokenHandler),
+    ],
+    debug=True)
+
 def main():
-    app = webapp.WSGIApplication([
-        (settings.BASE + '/', IndexHandler),
-        (settings.BASE + '/new', NewBlogEntryHandler),
-        (settings.BASE + '/edit', EditBlogEntryHandler),
-        (settings.BASE + '/xsrf_token', XsrfTokenHandler),
-        ],
-        debug=True)
     from google.appengine.ext.webapp.util import run_wsgi_app
     run_wsgi_app(app)
 
 if __name__ == '__main__':
-  main()
+    main()
