@@ -4,8 +4,9 @@ from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 import random, datetime
+import settings
 
-BASE_URL = 'http://localhost:8080/blog'
+BASE_URL = 'http://localhost:8080%s' % settings.BASE
 
 # ======================== HOOKS ==========================
 
